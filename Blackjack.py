@@ -1,4 +1,10 @@
 import numpy as np
+import pandas as pd
+import json
+
+D = pd.read_json("Deck.json")    #The deck
+O = np.arange(52)                #The order
+np.random.shuffle(O)             #The Shuffle
 
 #Hand of The House and the player
 MHand = 0
@@ -6,9 +12,6 @@ Hand = 0
 
 lost = 0                         #Indicator you lost
 #indicator of Hit or stay is Flag
-
-#Values of cards, 0 is an ace
-#Card = np.random.randint(12)
 
 #The House's Hand
 Flag = 1
