@@ -1,73 +1,76 @@
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
 import numpy as np
 import pandas as pd
 import json
 
-D = pd.read_json("Deck.json")    #The deck
-O = np.arange(52)                #The order
-o = 0                            #Current order
-np.random.shuffle(O)             #The Shuffle
+# Deck related setup
+D = pd.read_json("Blackjack/Deck.json")    # The deck with values and faces
+Order = np.arange(52)            # The order of the cards
+o = 0                            # Counter for the cards taken from the deck assuring we wont get the same card twice
+np.random.shuffle(Order)         # The shuffled order of the cards
 
-lost = 0                         #Indicator you lost
-#indicator of Hit or stay is Flag
-
-#Hand of The House and the player
-MHand = 0
-Hand = 0
-
-#The House's Hand
-Flag = 1
-
-#Getting a card from the shuffled deck LC standing for Last Card added
+# Getting a card from the Deck in the order of the "Order" 
 def GetCard(Hand):
-    global o,O,D
-    LC = D["Value"][O[o]]
-    if LC == "Ace" and (Hand+11 > 21):
-        LC = 1
-    elif LC == "Ace":
-        LC = 11
-    elif isinstance(LC,int):
-        LC = D["Value"][O[o]]
+    global o,Order,D
+    Current_Value = Hand.get()
+    Last_Card = D["Value"][Order[o]]                     # The card that will be added
+    if Last_Card == "Ace" and (Current_Value + 11 > 21):
+        Last_Card = 1
+    elif Last_Card == "Ace":
+        Last_Card = 11
+    elif isinstance(Last_Card,int):
+        Last_Card = D["Value"][Order[o]]
     else:
-        LC = 10
+        Last_Card = 10
     o += 1
-    return LC
+    New_Value = Current_Value + Last_Card
+    Hand.set(New_Value)
 
+# Defining Buttons
+def Button_Hit():
+    GetCard(Hand)
 
-MHand += GetCard(MHand)
-MHand1 = MHand                   #The House's visible card
-MHandc = 0                       #The House's number of hidden cards
-while Flag==1:
-    LC = GetCard(MHand)
-    MHand += LC
-    MHandc += 1
-    if MHand >=21:
-        MHand -= LC
-        MHandc -= 1
-        o -= 1
-        Flag = 0
-        print(f"The House has: {MHand1} with {MHandc} hidden cards")
-
-#The House has Blackjack
-if MHand == 21 and MHandc==2:
-    lost == 1
-    print("The house got Blackjack :)")
-
-#Your Hand
-Flag = 1
-while Flag==1 and lost ==0:
-    if Hand <= 21:
-        print(f"you have: {Hand}")
-        Flag = input("type 1 to hit and 0 to stay:")
-        Flag = int(Flag)
+def Button_Stand():
+    if Hand.get() < Dealer.get():
+        messagebox.showinfo(message='You lost, loser >:)')
+    elif Hand.get() > Dealer.get():
+        messagebox.showinfo(message='You won, Congrats!')
     else:
-        print("You Busted")
-        lost = 1
-        break
-    if Flag ==1:
-        LC = GetCard(Hand)
-        Hand += LC
+        messagebox.showinfo(message='Push, its a tie')
+    root.destroy()
 
-if Hand > MHand and lost == 0:
-    print(f"you won, you had {Hand}, The House had {MHand}")
-else:
-    print(f"you lost, you had {Hand}, The House had {MHand}")
+# Mainframe setup
+root = Tk()
+root.title("Blackjack")
+mainframe = ttk.Frame(root, padding="3 3 3 3")
+mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+root.columnconfigure(0, weight=1)
+root.rowconfigure(0, weight=1)
+
+# Variables setup
+Hand = IntVar()   # Player's hand (Value)
+Dealer = IntVar() # Dealer's hand (Value)
+Hand.set(0)
+Dealer.set(0)
+
+# Variable labels
+ttk.Label(mainframe, textvariable=Hand).grid(column=2, row=2, sticky=(W, E))
+ttk.Label(mainframe, textvariable=Dealer).grid(column=2, row=1, sticky=(W, E))
+
+# Static labels
+ttk.Label(mainframe, text="Your Hand").grid(column=1, row=2, sticky=W)
+ttk.Label(mainframe, text="The Dealer").grid(column=1, row=1, sticky=W)
+
+# Buttons
+Hit = ttk.Button(mainframe, text='Hit', command=Button_Hit)
+Hit.grid(column=1, rows=1, sticky=W)
+Stand = ttk.Button(mainframe, text='Stand', command=Button_Stand)
+Stand.grid(column=2, rows=1, sticky=W)
+
+
+for child in mainframe.winfo_children(): 
+    child.grid_configure(padx=5, pady=5)
+
+root.mainloop()
