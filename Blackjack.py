@@ -6,7 +6,7 @@ import pandas as pd
 import time
 
 # Deck related setup
-Deck = pd.read_json("Python/Free Time Projects/Blackjack/Deck.json")    # The deck with values and faces
+Deck = pd.read_json("Deck.json")    # The deck with values and faces
 Order = np.arange(52)            # The order of the cards
 o = 0                            # Counter for the cards taken from the deck assuring we wont get the same card twice
 np.random.shuffle(Order)         # The shuffled order of the cards
@@ -85,7 +85,7 @@ def Button_Stand():
     
     # Checking Hands and determining winner
     if Hand.get() < Dealer.get():
-        messagebox.showinfo(message='You lost, loser >:)')
+        messagebox.showinfo(message='You lost')
     elif Hand.get() > Dealer.get():
         messagebox.showinfo(message='You won, Congrats!')
     else:
