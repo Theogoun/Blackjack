@@ -17,11 +17,11 @@ def GetCard(Hand):
     Current_Value = Hand.get()
 
     Last_Card = Deck["Value"][Order[o]]                     # The card that will be added
-    if Last_Card == "Ace" and (Current_Value + 11 > 21):
+    if Last_Card == "Ace" and (Current_Value + 11 > 21):    # Checking if the ace will be counted as 1 or 11
         Last_Card = 1
     elif Last_Card == "Ace":
         Last_Card = 11
-    elif isinstance(Last_Card,int):
+    elif isinstance(Last_Card,int):                         # In case the card is a number
         Last_Card = Deck["Value"][Order[o]]
     else:
         Last_Card = 10
